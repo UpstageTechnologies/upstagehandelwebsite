@@ -54,7 +54,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         width: '100vw',
         backgroundColor: '#0F172A',
         backgroundImage: 'radial-gradient(circle at 50% 10%, #1E293B 0%, #0F172A 100%)',
-        padding: 20,
+        padding: '16px 12px',
       }}
     >
       <div
@@ -64,7 +64,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           backgroundColor: '#FFFFFF',
           borderRadius: 20,
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)',
-          padding: 36,
+          padding: 'clamp(20px, 5vw, 36px)',
           display: 'flex',
           flexDirection: 'column',
           gap: 24,

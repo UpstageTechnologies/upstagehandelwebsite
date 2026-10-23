@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
+  Menu,
   Search,
   Bell,
   RefreshCw,
@@ -23,6 +24,7 @@ interface TopbarProps {
   onRefresh: () => void;
   refreshing: boolean;
   onNavigateToTab: (tab: string) => void;
+  onOpenMobileMenu?: () => void;
 }
 
 export const Topbar: React.FC<TopbarProps> = ({
@@ -36,6 +38,7 @@ export const Topbar: React.FC<TopbarProps> = ({
   onRefresh,
   refreshing,
   onNavigateToTab,
+  onOpenMobileMenu,
 }) => {
   const [alertsOpen, setAlertsOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement>(null);
@@ -52,9 +55,22 @@ export const Topbar: React.FC<TopbarProps> = ({
 
   return (
     <header className="topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="topbar-left">
+        {/* Mobile / Tablet Drawer Hamburger Toggle */}
+        {onOpenMobileMenu && (
+          <button
+            type="button"
+            className="topbar-menu-btn"
+            onClick={onOpenMobileMenu}
+            aria-label="Open navigation menu"
+            title="Open menu"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+
         {/* Breadcrumbs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#64748B' }}>
+        <div className="topbar-breadcrumbs">
           <span>CRM</span>
           <span style={{ color: '#CBD5E1' }}>/</span>
           {breadcrumbs.map((b, i) => (
@@ -73,21 +89,9 @@ export const Topbar: React.FC<TopbarProps> = ({
         </div>
 
         {/* Global Shop Selector Filter */}
-        <div style={{ position: 'relative' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 12px',
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
-              borderRadius: 8,
-              fontSize: 12.5,
-              color: '#334155',
-            }}
-          >
-            <Store size={14} color="#6366F1" />
+        <div className="topbar-shop-select-wrapper">
+          <div className="topbar-shop-select-box">
+            <Store size={14} color="#6366F1" style={{ flexShrink: 0 }} />
             <select
               value={selectedShopId}
               onChange={(e) => onSelectShopId(e.target.value)}
@@ -99,6 +103,9 @@ export const Topbar: React.FC<TopbarProps> = ({
                 color: '#0F172A',
                 cursor: 'pointer',
                 fontSize: 12.5,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
               }}
             >
               <option value="all">All Registered Shops ({shops.length})</option>
@@ -192,6 +199,7 @@ export const Topbar: React.FC<TopbarProps> = ({
                 top: 48,
                 right: 0,
                 width: 360,
+                maxWidth: 'calc(100vw - 28px)',
                 backgroundColor: '#FFFFFF',
                 borderRadius: 14,
                 boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.15)',

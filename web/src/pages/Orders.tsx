@@ -244,8 +244,8 @@ export const Orders: React.FC<OrdersProps> = ({
               placeholder="Search order ID, customer, phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 
@@ -297,8 +297,8 @@ export const Orders: React.FC<OrdersProps> = ({
           ).toLocaleString()}`}
           maxWidth="720px"
           footer={
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Update Status:</span>
                 {(['Preparing', 'Ready', 'Completed', 'Rejected'] as const).map((st) => (
                   <button
@@ -328,10 +328,8 @@ export const Orders: React.FC<OrdersProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Customer & Delivery Summary */}
             <div
+              className="responsive-grid-modal"
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 16,
                 backgroundColor: '#F8FAFC',
                 padding: 16,
                 borderRadius: 10,
@@ -362,7 +360,7 @@ export const Orders: React.FC<OrdersProps> = ({
               </div>
 
               {selectedOrder.deliveryAddress && (
-                <div style={{ gridColumn: 'span 2' }}>
+                <div style={{ gridColumn: '1 / -1' }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
                     Delivery Destination
                   </div>
@@ -380,55 +378,57 @@ export const Orders: React.FC<OrdersProps> = ({
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1E293B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Order Line Items
               </h4>
-              <table className="data-table" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
-                <thead>
-                  <tr>
-                    <th>Item Description</th>
-                    <th style={{ textAlign: 'center' }}>Quantity</th>
-                    <th style={{ textAlign: 'right' }}>Unit Price</th>
-                    <th style={{ textAlign: 'right' }}>Line Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedOrder.items && selectedOrder.items.length > 0 ? (
-                    selectedOrder.items.map((item, idx) => {
-                      const name = item.name || item.itemName || 'Product Item';
-                      const price = Number(item.price || item.salesPrice || 0);
-                      const qty = Number(item.qty || 1);
-                      return (
-                        <tr key={`item-${idx}`}>
-                          <td>
-                            <strong>{name}</strong>
-                          </td>
-                          <td style={{ textAlign: 'center' }}>{qty}</td>
-                          <td style={{ textAlign: 'right' }} className="font-mono">
-                            ₹{price.toFixed(2)}
-                          </td>
-                          <td style={{ textAlign: 'right', fontWeight: 600 }} className="font-mono">
-                            ₹{(price * qty).toFixed(2)}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
+              <div className="table-container" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
+                <table className="data-table">
+                  <thead>
                     <tr>
-                      <td colSpan={4} style={{ textAlign: 'center', color: '#94A3B8' }}>
-                        No line items recorded
+                      <th>Item Description</th>
+                      <th style={{ textAlign: 'center' }}>Quantity</th>
+                      <th style={{ textAlign: 'right' }}>Unit Price</th>
+                      <th style={{ textAlign: 'right' }}>Line Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                      selectedOrder.items.map((item, idx) => {
+                        const name = item.name || item.itemName || 'Product Item';
+                        const price = Number(item.price || item.salesPrice || 0);
+                        const qty = Number(item.qty || 1);
+                        return (
+                          <tr key={`item-${idx}`}>
+                            <td>
+                              <strong>{name}</strong>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>{qty}</td>
+                            <td style={{ textAlign: 'right' }} className="font-mono">
+                              ₹{price.toFixed(2)}
+                            </td>
+                            <td style={{ textAlign: 'right', fontWeight: 600 }} className="font-mono">
+                              ₹{(price * qty).toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center', color: '#94A3B8' }}>
+                          No line items recorded
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ backgroundColor: '#F8FAFC' }}>
+                      <td colSpan={3} style={{ textAlign: 'right', fontWeight: 700, color: '#0F172A' }}>
+                        Grand Total:
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 15, color: '#0F172A' }} className="font-mono">
+                        ₹{selectedOrder.total.toLocaleString()}
                       </td>
                     </tr>
-                  )}
-                </tbody>
-                <tfoot>
-                  <tr style={{ backgroundColor: '#F8FAFC' }}>
-                    <td colSpan={3} style={{ textAlign: 'right', fontWeight: 700, color: '#0F172A' }}>
-                      Grand Total:
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 15, color: '#0F172A' }} className="font-mono">
-                      ₹{selectedOrder.total.toLocaleString()}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
         </Modal>

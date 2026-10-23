@@ -260,8 +260,8 @@ export const Subscriptions: React.FC<SubscriptionsProps> = ({
               placeholder="Search shop, owner, payment ID..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 
@@ -316,7 +316,7 @@ export const Subscriptions: React.FC<SubscriptionsProps> = ({
               : 'N/A'
           })`}
           footer={
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: '100%' }}>
               <button
                 onClick={handleSavePlanModification}
                 className="btn btn-primary"

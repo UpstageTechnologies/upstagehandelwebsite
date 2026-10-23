@@ -50,7 +50,7 @@ export const Settings: React.FC<SettingsProps> = ({
       />
 
       {/* Grid of settings cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <div className="responsive-grid-2">
         {/* Administrator Profile Card */}
         <div className="card">
           <div className="card-header">
@@ -106,7 +106,7 @@ export const Settings: React.FC<SettingsProps> = ({
             <Badge variant="primary">Production</Badge>
           </div>
           <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+            <div className="responsive-grid-modal" style={{ fontSize: 13 }}>
               <div>
                 <span style={{ color: '#64748B', fontSize: 12 }}>Firebase Project ID:</span>
                 <div style={{ fontWeight: 700, color: '#0F172A', fontFamily: 'monospace' }}>
@@ -136,7 +136,7 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+            <div style={{ display: 'flex', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
               <button
                 onClick={handleTestConnection}
                 className="btn btn-secondary"
@@ -179,7 +179,8 @@ export const Settings: React.FC<SettingsProps> = ({
             The desktop CRM automatically reads the following environment variables from <code>.env</code> or system runtime:
           </p>
 
-          <table className="data-table" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
+          <div className="table-container" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
+            <table className="data-table">
             <thead>
               <tr>
                 <th>Variable Name</th>
@@ -215,6 +216,7 @@ export const Settings: React.FC<SettingsProps> = ({
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

@@ -208,8 +208,8 @@ export const ProductsInventory: React.FC<ProductsInventoryProps> = ({
               placeholder="Search product, barcode, shop..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 

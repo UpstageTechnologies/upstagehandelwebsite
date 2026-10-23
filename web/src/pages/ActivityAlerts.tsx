@@ -49,7 +49,7 @@ export const ActivityAlerts: React.FC<ActivityAlertsProps> = ({
       />
 
       {/* Severity Metric Pills */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div className="responsive-grid-4" style={{ gap: 14 }}>
         <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 10, border: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Total Active Alerts</span>
           <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 2 }}>
@@ -134,7 +134,8 @@ export const ActivityAlerts: React.FC<ActivityAlertsProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: 16,
+                  flexWrap: 'wrap',
+                  gap: 12,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

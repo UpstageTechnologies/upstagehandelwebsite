@@ -213,7 +213,7 @@ export const SalesHistory: React.FC<SalesHistoryProps> = ({
       />
 
       {/* Aggregate summary cards for active filter */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div className="responsive-grid-4" style={{ gap: 14 }}>
         <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 10, border: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Filtered Gross Sales</span>
           <div style={{ fontSize: 20, fontWeight: 800, color: '#10B981', marginTop: 2 }} className="font-mono">
@@ -256,8 +256,8 @@ export const SalesHistory: React.FC<SalesHistoryProps> = ({
               placeholder="Search bill number, shop..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 
@@ -318,10 +318,8 @@ export const SalesHistory: React.FC<SalesHistoryProps> = ({
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div
+              className="responsive-grid-modal"
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 12,
                 backgroundColor: '#F8FAFC',
                 padding: 14,
                 borderRadius: 8,
@@ -337,60 +335,62 @@ export const SalesHistory: React.FC<SalesHistoryProps> = ({
                 <strong>{selectedSale.isGlobalMode ? 'Global Delivery' : 'Local POS'}</strong>
               </div>
               {selectedSale.razorpayPaymentId && (
-                <div style={{ gridColumn: 'span 2' }}>
+                <div style={{ gridColumn: '1 / -1' }}>
                   <span style={{ color: '#64748B' }}>Gateway Payment ID:</span>{' '}
                   <span className="font-mono">{selectedSale.razorpayPaymentId}</span>
                 </div>
               )}
             </div>
 
-            <table className="data-table" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
-              <thead>
-                <tr>
-                  <th>Item Name</th>
-                  <th style={{ textAlign: 'center' }}>Qty</th>
-                  <th style={{ textAlign: 'right' }}>Price</th>
-                  <th style={{ textAlign: 'right' }}>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedSale.items && selectedSale.items.length > 0 ? (
-                  selectedSale.items.map((it, idx) => {
-                    const name = it.name || it.itemName || 'Product';
-                    const price = Number(it.price || it.salesPrice || 0);
-                    const qty = Number(it.qty || 1);
-                    return (
-                      <tr key={idx}>
-                        <td>{name}</td>
-                        <td style={{ textAlign: 'center' }}>{qty}</td>
-                        <td style={{ textAlign: 'right' }} className="font-mono">
-                          ₹{price.toFixed(2)}
-                        </td>
-                        <td style={{ textAlign: 'right', fontWeight: 600 }} className="font-mono">
-                          ₹{(price * qty).toFixed(2)}
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
+            <div className="table-container" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', color: '#94A3B8' }}>
-                      No individual items recorded
+                    <th>Item Name</th>
+                    <th style={{ textAlign: 'center' }}>Qty</th>
+                    <th style={{ textAlign: 'right' }}>Price</th>
+                    <th style={{ textAlign: 'right' }}>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedSale.items && selectedSale.items.length > 0 ? (
+                    selectedSale.items.map((it, idx) => {
+                      const name = it.name || it.itemName || 'Product';
+                      const price = Number(it.price || it.salesPrice || 0);
+                      const qty = Number(it.qty || 1);
+                      return (
+                        <tr key={idx}>
+                          <td>{name}</td>
+                          <td style={{ textAlign: 'center' }}>{qty}</td>
+                          <td style={{ textAlign: 'right' }} className="font-mono">
+                            ₹{price.toFixed(2)}
+                          </td>
+                          <td style={{ textAlign: 'right', fontWeight: 600 }} className="font-mono">
+                            ₹{(price * qty).toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: 'center', color: '#94A3B8' }}>
+                        No individual items recorded
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+                <tfoot>
+                  <tr style={{ backgroundColor: '#F8FAFC' }}>
+                    <td colSpan={3} style={{ textAlign: 'right', fontWeight: 700 }}>
+                      Final Bill Total:
+                    </td>
+                    <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 15, color: '#10B981' }} className="font-mono">
+                      ₹{selectedSale.total.toLocaleString()}
                     </td>
                   </tr>
-                )}
-              </tbody>
-              <tfoot>
-                <tr style={{ backgroundColor: '#F8FAFC' }}>
-                  <td colSpan={3} style={{ textAlign: 'right', fontWeight: 700 }}>
-                    Final Bill Total:
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 15, color: '#10B981' }} className="font-mono">
-                    ₹{selectedSale.total.toLocaleString()}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </Modal>
       )}

@@ -230,7 +230,7 @@ export const Overview: React.FC<OverviewProps> = ({
       </div>
 
       {/* Visual Analytics & Breakdown Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+      <div className="responsive-grid-2-1">
         {/* Sales Performance Trend */}
         <div className="card">
           <div className="card-header">
@@ -281,7 +281,7 @@ export const Overview: React.FC<OverviewProps> = ({
       </div>
 
       {/* Recent Activity & Best-Sellers Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <div className="responsive-grid-2">
         {/* Urgent Attention & Alerts */}
         <div className="card">
           <div className="card-header">

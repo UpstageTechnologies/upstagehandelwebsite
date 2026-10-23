@@ -231,8 +231,8 @@ export const Users: React.FC<UsersProps> = ({
               placeholder="Search user, shop, email, phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 
@@ -281,7 +281,7 @@ export const Users: React.FC<UsersProps> = ({
           title={`User Profile: ${selectedUser.ownerName}`}
           subtitle={`Account ID: ${selectedUser.customShopUid || selectedUser.id}`}
           footer={
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: '100%' }}>
               <button
                 onClick={() => {
                   onSelectShop(selectedUser.id);
@@ -302,10 +302,8 @@ export const Users: React.FC<UsersProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Quick Summary Grid */}
             <div
+              className="responsive-grid-modal"
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: 16,
                 backgroundColor: '#F8FAFC',
                 padding: 16,
                 borderRadius: 10,
@@ -356,7 +354,7 @@ export const Users: React.FC<UsersProps> = ({
                 Account & Location Specifications
               </h4>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+              <div className="responsive-grid-modal" style={{ fontSize: 13 }}>
                 <div>
                   <span style={{ color: '#64748B' }}>Business Category:</span>{' '}
                   <strong>{selectedUser.shopType}</strong>

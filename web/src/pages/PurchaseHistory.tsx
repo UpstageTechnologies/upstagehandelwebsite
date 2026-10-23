@@ -172,7 +172,7 @@ export const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({
       />
 
       {/* Aggregate KPI */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+      <div className="responsive-grid-3" style={{ gap: 14 }}>
         <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 10, border: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Filtered Purchase Spend</span>
           <div style={{ fontSize: 20, fontWeight: 800, color: '#0284C7', marginTop: 2 }} className="font-mono">
@@ -208,8 +208,8 @@ export const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({
               placeholder="Search invoice number, supplier, shop..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 
@@ -257,57 +257,59 @@ export const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <table className="data-table" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
-              <thead>
-                <tr>
-                  <th>Restocked Product</th>
-                  <th style={{ textAlign: 'center' }}>Qty</th>
-                  <th style={{ textAlign: 'right' }}>Unit Cost</th>
-                  <th style={{ textAlign: 'right' }}>Line Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedInvoice.items && selectedInvoice.items.length > 0 ? (
-                  selectedInvoice.items.map((it, idx) => {
-                    const name = it.name || it.itemName || 'Product';
-                    const cost = Number(it.purchasePrice || 0);
-                    const qty = Number(it.qty || 1);
-                    return (
-                      <tr key={idx}>
-                        <td>
-                          <strong>{name}</strong>
-                        </td>
-                        <td style={{ textAlign: 'center' }}>
-                          {qty} {it.unitType || 'Qty'}
-                        </td>
-                        <td style={{ textAlign: 'right' }} className="font-mono">
-                          ₹{cost.toFixed(2)}
-                        </td>
-                        <td style={{ textAlign: 'right', fontWeight: 600 }} className="font-mono">
-                          ₹{(cost * qty).toFixed(2)}
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
+            <div className="table-container" style={{ border: '1px solid #E2E8F0', borderRadius: 8 }}>
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', color: '#94A3B8' }}>
-                      No items recorded
+                    <th>Restocked Product</th>
+                    <th style={{ textAlign: 'center' }}>Qty</th>
+                    <th style={{ textAlign: 'right' }}>Unit Cost</th>
+                    <th style={{ textAlign: 'right' }}>Line Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedInvoice.items && selectedInvoice.items.length > 0 ? (
+                    selectedInvoice.items.map((it, idx) => {
+                      const name = it.name || it.itemName || 'Product';
+                      const cost = Number(it.purchasePrice || 0);
+                      const qty = Number(it.qty || 1);
+                      return (
+                        <tr key={idx}>
+                          <td>
+                            <strong>{name}</strong>
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            {qty} {it.unitType || 'Qty'}
+                          </td>
+                          <td style={{ textAlign: 'right' }} className="font-mono">
+                            ₹{cost.toFixed(2)}
+                          </td>
+                          <td style={{ textAlign: 'right', fontWeight: 600 }} className="font-mono">
+                            ₹{(cost * qty).toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: 'center', color: '#94A3B8' }}>
+                        No items recorded
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+                <tfoot>
+                  <tr style={{ backgroundColor: '#F8FAFC' }}>
+                    <td colSpan={3} style={{ textAlign: 'right', fontWeight: 700 }}>
+                      Invoice Total:
+                    </td>
+                    <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 15, color: '#0284C7' }} className="font-mono">
+                      ₹{selectedInvoice.total.toLocaleString()}
                     </td>
                   </tr>
-                )}
-              </tbody>
-              <tfoot>
-                <tr style={{ backgroundColor: '#F8FAFC' }}>
-                  <td colSpan={3} style={{ textAlign: 'right', fontWeight: 700 }}>
-                    Invoice Total:
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 15, color: '#0284C7' }} className="font-mono">
-                    ₹{selectedInvoice.total.toLocaleString()}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </Modal>
       )}

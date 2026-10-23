@@ -246,8 +246,8 @@ export const Shops: React.FC<ShopsProps> = ({
               placeholder="Search shop, owner, code..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="filter-input"
-              style={{ paddingLeft: 32, width: 260 }}
+              className="filter-input filter-search-input"
+              style={{ paddingLeft: 32 }}
             />
           </div>
 
@@ -306,7 +306,7 @@ export const Shops: React.FC<ShopsProps> = ({
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* KPI stats for this shop */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            <div className="responsive-grid-4" style={{ gap: 12 }}>
               <div style={{ backgroundColor: '#F8FAFC', padding: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}>
                 <span style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 600 }}>Products</span>
                 <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginTop: 2 }}>
@@ -337,7 +337,7 @@ export const Shops: React.FC<ShopsProps> = ({
             </div>
 
             {/* Sub-tab navigation */}
-            <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', gap: 16 }}>
+            <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', gap: 16, overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: 2 }}>
               {(
                 [
                   { id: 'inventory', label: `Inventory (${shopProducts.length})` },

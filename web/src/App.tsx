@@ -61,6 +61,7 @@ export default function App() {
   // App Layout State
   const [currentTab, setCurrentTab] = useState('overview');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedShopId, setSelectedShopId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -251,6 +252,7 @@ export default function App() {
         currentTab={currentTab}
         onSelectTab={(tab) => {
           setCurrentTab(tab);
+          setMobileMenuOpen(false);
           window.scrollTo(0, 0);
         }}
         collapsed={sidebarCollapsed}
@@ -260,6 +262,8 @@ export default function App() {
         expiringSubsCount={alerts.filter((a) => a.type === 'subscription_expiring').length}
         adminEmail={admin.email}
         onLogout={handleLogout}
+        mobileOpen={mobileMenuOpen}
+        onCloseMobile={() => setMobileMenuOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -274,7 +278,11 @@ export default function App() {
           alerts={alerts}
           onRefresh={() => loadData(true)}
           refreshing={refreshing}
-          onNavigateToTab={(tab) => setCurrentTab(tab)}
+          onNavigateToTab={(tab) => {
+            setCurrentTab(tab);
+            setMobileMenuOpen(false);
+          }}
+          onOpenMobileMenu={() => setMobileMenuOpen(true)}
         />
 
         <div className="content-scroll">
