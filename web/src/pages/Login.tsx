@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, Mail, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
-import { adminSignIn, AdminUser } from '../services/authService';
+import { ShieldCheck, Lock, Mail, AlertCircle, ArrowRight, RefreshCw } from 'lucide-react';
+import { adminSignIn, AdminUser, getAuthErrorMessage } from '../services/authService';
 
 interface LoginProps {
   onLoginSuccess: (admin: AdminUser) => void;
@@ -14,6 +14,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
     setError(null);
     setLoading(true);
 
@@ -21,27 +23,12 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const admin = await adminSignIn(email, password);
       onLoginSuccess(admin);
     } catch (err: any) {
-      console.error('Login failure:', err);
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Invalid administrator email or password.');
-      } else {
-        setError(err.message || 'Authentication failed. Please verify credentials.');
-      }
+      console.error('Firebase Authentication failure:', err);
+      const friendlyMsg = err.code ? getAuthErrorMessage(err.code) : err.message;
+      setError(friendlyMsg || 'Authentication failed. Please verify your administrator credentials.');
     } finally {
       setLoading(false);
     }
-  };
-
-  // Quick Demo Access for development testing
-  const handleQuickDemoAccess = () => {
-    const demoAdmin: AdminUser = {
-      uid: 'upstage-admin-master',
-      email: 'admin@upstage.com',
-      displayName: 'Master Administrator',
-      role: 'admin',
-      isSuperAdmin: true,
-    };
-    onLoginSuccess(demoAdmin);
   };
 
   return (
@@ -109,7 +96,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               display: 'flex',
               alignItems: 'flex-start',
               gap: 8,
+              lineHeight: 1.4,
             }}
+            role="alert"
           >
             <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
             <span>{error}</span>
@@ -129,10 +118,12 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               />
               <input
                 type="email"
-                placeholder="admin@upstage.com"
+                placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
+                autoComplete="email"
                 className="filter-input"
                 style={{ width: '100%', height: 42, paddingLeft: 38 }}
               />
@@ -154,6 +145,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
+                autoComplete="current-password"
                 className="filter-input"
                 style={{ width: '100%', height: 42, paddingLeft: 38 }}
               />
@@ -164,26 +157,44 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             type="submit"
             className="btn btn-primary"
             disabled={loading}
-            style={{ width: '100%', height: 44, marginTop: 8 }}
+            style={{
+              width: '100%',
+              height: 44,
+              marginTop: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              opacity: loading ? 0.75 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
           >
-            {loading ? 'Authenticating...' : 'Sign In as Administrator'}
-            <ArrowRight size={16} />
+            {loading ? (
+              <>
+                <RefreshCw size={16} className="animate-spin" />
+                <span>Authenticating with Firebase...</span>
+              </>
+            ) : (
+              <>
+                <span>Sign In as Administrator</span>
+                <ArrowRight size={16} />
+              </>
+            )}
           </button>
         </form>
 
-        {/* Quick Demo Access Trigger for Testing */}
-        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 16, textAlign: 'center' }}>
-          <button
-            onClick={handleQuickDemoAccess}
-            className="btn btn-secondary"
-            style={{ width: '100%', fontSize: 12.5 }}
-          >
-            <Sparkles size={14} color="#6366F1" />
-            Quick Demo Admin Access
-          </button>
-          <span style={{ fontSize: 11, color: '#94A3B8', marginTop: 6, display: 'block' }}>
-            Bypasses form for instant local evaluation of CRM dashboards
-          </span>
+        {/* Security & Access Notice */}
+        <div
+          style={{
+            borderTop: '1px solid #E2E8F0',
+            paddingTop: 14,
+            fontSize: 11.5,
+            color: '#64748B',
+            textAlign: 'center',
+            lineHeight: 1.4,
+          }}
+        >
+          Protected enterprise management interface. Access restricted to provisioned Firebase Authentication accounts.
         </div>
       </div>
     </div>

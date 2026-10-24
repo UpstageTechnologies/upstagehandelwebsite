@@ -33,7 +33,24 @@ import { ReportsAnalytics } from './pages/ReportsAnalytics';
 import { ActivityAlerts } from './pages/ActivityAlerts';
 import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
+import { AuthGuard } from './components/auth/AuthGuard';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+
+const VALID_TABS = [
+  'overview',
+  'users',
+  'subscriptions',
+  'shops',
+  'inventory',
+  'orders',
+  'sales',
+  'purchases',
+  'reports',
+  'alerts',
+  'settings',
+] as const;
+
+type CRMTab = (typeof VALID_TABS)[number];
 
 const INITIAL_KPIS: DashboardKPIs = {
   totalUsers: 0,
@@ -54,12 +71,15 @@ const INITIAL_KPIS: DashboardKPIs = {
 };
 
 export default function App() {
-  // Admin Auth State
+  // Admin Auth State (Driven exclusively by Firebase Authentication on login-form-9111e)
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // App Layout State
-  const [currentTab, setCurrentTab] = useState('overview');
+  // App Layout State & Destination Route preservation
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    const hash = window.location.hash.replace(/^#\/?/, '').trim();
+    return VALID_TABS.includes(hash as any) ? hash : 'overview';
+  });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedShopId, setSelectedShopId] = useState<string>('all');
@@ -78,25 +98,32 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Subscribe to Firebase Auth
+  // Subscribe to Firebase Authentication observer
   useEffect(() => {
-    // Check if demo admin session was stored in localStorage
-    const saved = localStorage.getItem('upstage_crm_admin_session');
-    if (saved) {
-      try {
-        setAdmin(JSON.parse(saved));
-        setAuthLoading(false);
-        return;
-      } catch (e) {
-        localStorage.removeItem('upstage_crm_admin_session');
-      }
-    }
-
     const unsub = subscribeToAdminAuth((authAdmin, loading) => {
       setAdmin(authAdmin);
       setAuthLoading(loading);
     });
     return () => unsub();
+  }, []);
+
+  // Sync window.location.hash with currentTab for authenticated sessions
+  useEffect(() => {
+    if (admin) {
+      window.location.hash = currentTab;
+    }
+  }, [currentTab, admin]);
+
+  // Support browser Back/Forward navigation between CRM modules
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '').trim();
+      if (VALID_TABS.includes(hash as any)) {
+        setCurrentTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   // Fetch full ecosystem data
@@ -131,16 +158,23 @@ export default function App() {
     }
   }, [admin, loadData]);
 
-  // Handle Login Success
+  // Handle Login Success (Redirect to requested destination or landing page)
   const handleLoginSuccess = (adminUser: AdminUser) => {
     setAdmin(adminUser);
-    localStorage.setItem('upstage_crm_admin_session', JSON.stringify(adminUser));
+    const hash = window.location.hash.replace(/^#\/?/, '').trim();
+    if (VALID_TABS.includes(hash as any)) {
+      setCurrentTab(hash);
+    } else {
+      setCurrentTab('overview');
+      window.location.hash = 'overview';
+    }
   };
 
-  // Handle Logout
+  // Handle Logout (Signs out of dedicated authentication instance and redirects to login)
   const handleLogout = async () => {
     await adminSignOut();
     setAdmin(null);
+    setMobileMenuOpen(false);
   };
 
   // Status and Plan update actions
@@ -214,39 +248,13 @@ export default function App() {
     settings: 'Settings & Diagnostics',
   };
 
-  // Loading Screen while auth state is resolving
-  if (authLoading) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          backgroundColor: '#0F172A',
-          color: '#FFFFFF',
-          gap: 16,
-        }}
-      >
-        <div
-          className="skeleton"
-          style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#312E81' }}
-        />
-        <div style={{ fontSize: 14, color: '#94A3B8', fontWeight: 500 }}>
-          Verifying Administrator Session...
-        </div>
-      </div>
-    );
-  }
-
-  // Login Portal if not authenticated
-  if (!admin) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
-
   return (
-    <div className="app-layout">
+    <AuthGuard
+      admin={admin}
+      loading={authLoading}
+      fallback={<Login onLoginSuccess={handleLoginSuccess} />}
+    >
+      <div className="app-layout">
       {/* Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -260,7 +268,7 @@ export default function App() {
         unreadAlertsCount={alerts.length}
         pendingOrdersCount={kpis.pendingOrders}
         expiringSubsCount={alerts.filter((a) => a.type === 'subscription_expiring').length}
-        adminEmail={admin.email}
+        adminEmail={admin?.email}
         onLogout={handleLogout}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
@@ -407,7 +415,7 @@ export default function App() {
 
             {currentTab === 'settings' && (
               <Settings
-                adminEmail={admin.email}
+                adminEmail={admin?.email}
                 onRefresh={() => loadData(true)}
               />
             )}
@@ -415,5 +423,6 @@ export default function App() {
         </div>
       </div>
     </div>
+    </AuthGuard>
   );
 }

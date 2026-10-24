@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Badge } from '../components/ui/Badge';
-import { app, auth } from '../services/firebase';
+import { app } from '../services/firebase';
 
 interface SettingsProps {
   adminEmail?: string | null;
